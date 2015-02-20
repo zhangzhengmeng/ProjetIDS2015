@@ -1,0 +1,323 @@
+/***** Reset *****/
+
+	html, body, div, span, applet,
+	object, iframe, h1, h2, h3, h4,
+	h5, h6, p, blockquote, pre, a,
+	abbr, acronym, address, big, cite,
+	code, del, dfn, em, img, ins, kbd,
+	q, s, samp, small, strike, strong,
+	sub, sup, tt, var, b, u, i, center,
+	dl, dt, dd, ol, ul, li, fieldset,
+	form, label, legend, table, caption,
+	tbody, tfoot, thead, tr, th, td,
+	article, aside, canvas, details,
+	embed, figure, figcaption, footer,
+	header, hgroup, menu, nav, output,
+	ruby, section, summary, time, mark,
+	audio, video 							{ margin: 0; padding: 0; border: 0; font-size:100%; font:inherit; vertical-align:baseline; }
+	
+	article, aside, details, figcaption, 
+	figure, footer, header, hgroup, menu, 
+	nav, section 							{ display:block; }
+	
+	body 									{ line-height:1; }
+	
+	ol, ul, li								{ list-style:none; }
+	
+	blockquote, q 							{ quotes:none; }
+	
+	blockquote:before, blockquote:after,
+	q:before, q:after 						{ content:''; content:none; }
+	
+	table 									{ border-collapse:collapse; border-spacing:0; }
+		
+/***** Basic Styles *****/
+
+body{
+	background: #000;
+	line-height: 1.4em;
+}
+
+img{
+	max-width: 100%;
+}
+
+.wrapper{
+	background: #fff;
+	margin: auto;
+	height: 1280px;
+	width : 720px;
+	position: relative;
+}
+#cursor{
+	width: 15px;
+	height: 15px;
+	border-radius: 100%;
+	background: #fff;
+	border: 2px solid #000;
+	box-shadow: 0 0 10px #000;
+	position: absolute;
+	z-index: 999;
+	display: none;
+}
+
+#ici{
+	width: 50px;
+	height: 50px;
+	border-radius: 100%;
+	border: 5px solid #F00;
+	position: absolute;
+	top:1009px;
+	left:200px;
+	z-index: 2;
+}
+
+/******** MAP *******/
+
+#map{
+	background-color: #ddd;
+	width: 720px;
+	height: 1280px;
+	font-family: DINlight, helvetica, sans-serif;
+	font-size: 14px;
+}
+
+#map div{
+	text-align: center;
+}
+
+#conf{
+	position: absolute;
+	left:10px;
+	top:10px;
+	width:700px;
+	height:460px;
+}
+
+#aas{
+	position: absolute;
+	left:56px;
+	top:705px;
+	width:86px;
+	height:82px;
+}
+
+#accueil{
+	position: absolute;
+	left:85px;
+	top:1103px;
+	width:114px;
+	height:143px;
+}
+
+
+#airstar{
+	position: absolute;
+	left:56px;
+	top:915px;
+	width:109px;
+	height:102px;
+}
+
+#anahata{
+	position: absolute;
+	left:358px;
+	top:721px;
+	width:111px;
+	height:80px;
+}
+
+#appsgate{
+	position: absolute;
+	left:563px;
+	top:813px;
+	width:86px;
+	height:140px;
+}
+
+#bms{
+	position: absolute;
+	left:469px;
+	top:827px;
+	width:86px;
+	height:88px;
+}
+
+#cinqsommeil{
+	position: absolute;
+	left:243px;
+	top:721px;
+	width:94px;
+	height:81px;
+}
+
+#ccsti{
+	position: absolute;
+	left:60px;
+	top:607px;
+	width:86px;
+	height:85px;
+}
+
+#dasein{
+	position: absolute;
+	left:358px;
+	top:981px;
+	width:95px;
+	height:92px;
+}
+
+#exohr{
+	position: absolute;
+	left:360px;
+	top:1093px;
+	width:115px;
+	height:88px;
+}
+
+#extrapolis{
+	position: absolute;
+	left:512px;
+	top:527px;
+	width:148px;
+	height:144px;
+}
+
+#fabter{
+	position: absolute;
+	left:597px;
+	top:1048px;
+	width:59px;
+	height:88px;
+}
+
+#infrarouge{
+	position: absolute;
+	left:487px;
+	top:1154px;
+	width:174px;
+	height:84px;
+}
+
+#inria{
+	position: absolute;
+	left:481px;
+	top:978px;
+	width:87px;
+	height:115px;
+}
+
+#livingmap{
+	position: absolute;
+	left:199px;
+	top:1009px;
+	width:88px;
+	height:94px;
+}
+
+#malik{
+	position: absolute;
+	left:569px;
+	top:685px;
+	width:85px;
+	height:111px;
+}
+
+#modernes{
+	position: absolute;
+	left:60px;
+	top:1041px;
+	width:86px;
+	height:57px;
+}
+
+#orange{
+	position: absolute;
+	left:263px;
+	top:849px;
+	width:95px;
+	height:104px;
+}
+
+
+
+#robair{
+	position: absolute;
+	left:369px;
+	top:849px;
+	width:84px;
+	height:117px;
+}
+
+#thero{
+	position: absolute;
+	left:253px;
+	top:527px;
+	width:200px;
+	height:186px;
+}
+
+
+/******** COULEURS *******/
+.ville{
+	background-color:#ff7800;
+}
+
+
+.objets{
+	background-color:#00e28f;
+}
+
+.immersive{
+	background-color:#e50b8d;
+}
+
+.atelier{
+	background-color:#7c4cff;
+}
+
+.autre{
+	background-color:#aeaeae;
+}
+
+
+
+
+/******** ACCUEIL *******/
+
+
+
+#logo{
+	width: 300px;
+	display: block;
+	margin: auto;
+	margin-top: 40px;
+}
+
+#say_hello{
+display: none;
+	background: rgba(0,0,0,0.7);
+	position: absolute;
+	top: 0; left: 0;
+	width: 100%;
+	height: 100%;
+	z-index:999;
+}
+
+#say_hello figure{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	max-width: 200px;
+	margin-left: -100px;
+	margin-top: -200px;
+}
+
+#say_hello figcaption{
+	font-size: 1.2em;
+	text-transform: lowercase;
+	text-align: center;
+	margin-top: 20px;
+	color: #fff;
+	font-family: DINlight, helvetica, sans-serif;
+}

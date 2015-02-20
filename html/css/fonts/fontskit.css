@@ -1,0 +1,21 @@
+@font-face {
+    font-family: 'DINbold';
+    src: url('FF_DIN_Bold.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+
+}
+@font-face {
+    font-family: 'DINmed';
+    src: url('FF_DIN_Medium.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+
+}
+@font-face {
+    font-family: 'DINLight';
+    src: url('FF_DIN_Light.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+
+}
