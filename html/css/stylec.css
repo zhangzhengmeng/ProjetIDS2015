@@ -97,12 +97,22 @@ border-left: 1.4em solid #ff0458;
 	border-radius: 50%;
 }
 
+#my-slideshow {
+padding:10px;
+height:130px;
+z-index: 14;
+width:700px;
+position:absolute;
+top:0px;
+left:0px;
+}
+
 #slide_titre{
 	height:140px;
 	padding: 20px;
 	z-index: 14;
 	position: absolute;
-	top:60px;
+	top:140px;
 	left:0px;
 	width: 680px;
 	color: white;
@@ -113,12 +123,6 @@ border-left: 1.4em solid #ff0458;
 	-o-transition:all 0.5s ease-out;
 	-webkit-transition:all 0.5s ease-out;
 	-ms-transition:all 0.5s ease-out;
-}
-#slide_titre img{
-		z-index: 14;
-		position: absolute;
-		top:60px;
-		left:0px;
 }
 
 #slide_titre h1{
@@ -163,29 +167,202 @@ transform:translateY(180px);
 	width: 720px;
 	height: 1430px;
 	font-family: DINBold, helvetica, sans-serif;
-	font-size: 40px;
+	font-size: 14px;
 	text-transform: uppercase;
-	/*color: white;*/
+	color: white;
 	position: absolute;
-	top:-400px;
-	/*background-color:#424242*/
+	top:-150px;
+	background-color:#424242
 }
+
+
+#conf{
+	position: absolute;
+	left:10px;
+	top:210px;
+	width:700px;
+	height:260px;
+}
+
+#jpo{
+	position: absolute;
+	left:10px;
+	top:730px;
+	width:100px;
+	height:100px;
+}
+
+#accueil{
+	position: absolute;
+	left:10px;
+	top:1090px;
+	width:200px;
+	height:100px;
+}
+
+
+#startair{
+	position: absolute;
+	left:10px;
+	top:850px;
+	width:100px;
+	height:100px;
+}
+
+#pri{
+	position: absolute;
+	left:360px;
+	top:730px;
+	width:100px;
+	height:100px;
+}
+
+#ricm{
+	position: absolute;
+	left:600px;
+	top:850px;
+	width:100px;
+	height:100px;
+}
+
+#fil3i{
+	position: absolute;
+	left:480px;
+	top:730px;
+	width:100px;
+	height:100px;
+}
+
+#geotech{
+	position: absolute;
+	left:240px;
+	top:730px;
+	width:100px;
+	height:100px;
+}
+
+#peip{
+	position: absolute;
+	left:10px;
+	top:610px;
+	width:100px;
+	height:100px;
+}
+
+#dasein{
+	position: absolute;
+	left:360px;
+	top:970px;
+	width:100px;
+	height:100px;
+}
+
+#exohr{
+	position: absolute;
+	left:360px;
+	top:1090px;
+	width:100px;
+	height:100px;
+}
+
+#extrapolis{
+	position: absolute;
+	left:480px;
+	top:490px;
+	width:220px;
+	height:220px;
+}
+
+#fabter{
+	position: absolute;
+	left:600px;
+	top:970px;
+	width:100px;
+	height:100px;
+}
+
+#infrarouge{
+	position: absolute;
+	left:480px;
+	top:1090px;
+	width:220px;
+	height:100px;
+}
+
+#inria{
+	position: absolute;
+	left:480px;
+	top:970px;
+	width:100px;
+	height:100px;
+}
+
+#livingmap{
+	position: absolute;
+	left:240px;
+	top:970px;
+	width:100px;
+	height:100px;
+}
+
+#tis{
+	position: absolute;
+	left:600px;
+	top:730px;
+	width:100px;
+	height:100px;
+}
+
+#fablab{
+	position: absolute;
+	left:10px;
+	top:970px;
+	width:100px;
+	height:100px;
+}
+
+#mat{
+	position: absolute;
+	left:240px;
+	top:850px;
+	width:100px;
+	height:100px;
+}
+
+
+
+#e2i{
+	position: absolute;
+	left:360px;
+	top:850px;
+	width:100px;
+	height:100px;
+}
+
+#polytechgrenoble{
+	position: absolute;
+	left:240px;
+	top:490px;
+	width:220px;
+	height:220px;
+}
+
 
 /******** COULEURS *******/
-.villes{
+.polytech{
 	background-color:#424242;
 }
 
 
-.objets{
+.filiere{
 	background-color:#424242;
 }
 
-.immersive{
+.projet{
 	background-color:#424242;
 }
 
-.atelier{
+.admin{
 	background-color:#424242;
 }
 
@@ -205,13 +382,34 @@ transform:translateY(180px);
 
 
 
+#logo{
+	width: 300px;
+	display: block;
+	position: absolute;
+	top:1000px;
+	left:210px;
+}
+#flash_air{
+	width: 120px;
+	display: block;
+	position: absolute;
+	top:1000px;
+	left:10px;
+}
+#flash_pg{
+	width: 120px;
+	display: block;
+	position: absolute;
+	top:1000px;
+	left:590px;
+}
 
 #say_hello{
 	background: rgba(0,0,0,0.8);	
 	/*background-image: url('img/accueil.png');*/
  	position: absolute;
 	top: 0; left: 0;
-	width: 720px;
+	width: 100%;
 	height: 1280px;
 	z-index:999;
 }
@@ -259,10 +457,35 @@ transform:translateY(180px);
 
 
 .survol{
-	/*background-color: #ff0045;*/
+	background-color: #ff0045;
 
 	z-index:60
 }
+
+#menu{
+	position: absolute;
+	top:0px;
+	left:0px;
+	z-index: 100;	
+	font-size: 2em;
+		height:120px;
+	color: white;
+	padding-top: 10px;
+	padding-bottom: 30px;
+	padding-left: 20px;
+}
+
+#menu img{
+	margin-right: 20px;
+}
+
+#menu h3{
+	color: white;	
+		font-family: DINLight, helvetica, sans-serif;
+		font-size: 0.9em;
+		width: 700px;
+}
+
 
 
 #infos{
@@ -274,6 +497,10 @@ transform:translateY(180px);
 	height:1280px;
 	z-index: 100;	
 	font-size: 2em;
+}
+
+iframe{
+	border: 0;
 }
 
 
@@ -346,7 +573,7 @@ transform:translateY(180px);
 
 
 #infos #description h1,#infos #commentaires h1{
-	font-size:1.8em;
+	font-size:1.2em;
 	color:white;
 	text-align:center;
 }
