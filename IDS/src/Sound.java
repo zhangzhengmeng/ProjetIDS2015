@@ -1,9 +1,9 @@
 import javazoom.jl.player.advanced.*;
 
 import java.io.*;
-  
-   // MP3, WMA, MPEG, WAV compatible
-  
+/*
+ * MP3, WMA, MPEG, WAV compatible
+ */
    public class Sound {
 	   @SuppressWarnings("resource")
 	public Sound(String path) throws Exception {

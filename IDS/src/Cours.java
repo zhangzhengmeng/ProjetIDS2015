@@ -1,13 +1,16 @@
 @SuppressWarnings("rawtypes")
+/*
+ * Création d'un objet cours avec tous les attributs nécessaire
+ */
 public class Cours implements java.lang.Comparable {
 
-	int date;
-	int hd;
-	int hf;
-	String intitule;
-	String salle;
-	String prof;
-	String option;
+	private int date;
+	private int hd;
+	private int hf;
+	private String intitule;
+	private String salle;
+	private String prof;
+	private String option;
 
 	public Cours(int date1, int hd1, int hf1, String intitule1, String salle1, String prof1, String option1) {
 		date=date1;

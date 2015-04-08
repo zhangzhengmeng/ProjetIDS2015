@@ -1,0 +1,6 @@
+RICM4 http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=839,1133,1132,857&projectId=3&calType=ical&nbWeeks=1
+TIS4 http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=698,1128,693&projectId=3&calType=ical&nbWeeks=1
+PRI4 http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=86,1094,1093,1092,1091&projectId=3&calType=ical&nbWeeks=1
+GEO4 http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=1139,1138,1137,1049,1010,1009,1007,1006,1005&projectId=3&calType=ical&nbWeeks=1
+MAT4 http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=827,90,1072,1071,1068,24,9,8,990,906,867,2036,2037,2034,2035,2038,196&projectId=3&calType=ical&nbWeeks=1
+3I4 http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=920,917&projectId=3&calType=ical&nbWeeks=1

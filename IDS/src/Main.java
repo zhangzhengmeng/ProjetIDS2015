@@ -1,3 +1,6 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,16 +20,23 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Scanner;
 
-public class Main {
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-	static String vocale="";
+public class Main { //classe pricipale avec la fonction main
 	
+	public static String code = null; //code lu par le lecteur NFC
+	public static Boolean fini = false; //pour éviter les plantages du lecteur NFC
+	public static Boolean trouve = false; //pour le cas où un prof cherche sa salle
+	
+	//fonction qui met un emploi du temps (celui de la classe "classe") dans une structure (ici une liste de cours)
+	//on obtient en sortie une liste des cours triées dans l'ordre des cours de la semaine
 	@SuppressWarnings("unchecked")
 	public static ArrayList<Cours> Edt(String classe) throws IOException
 	{
-		File f = new File(classe+".ics"); //    ADECal_TIS4.ics    ADECal_GEO4.ics
-	    //FileReader fr = new FileReader (f);
-	    //BufferedReader br = new BufferedReader (fr);
+		File f = new File(classe+".ics");
 		String line="";
 		int a,b,c,d;
 		int coco=0;
@@ -42,11 +52,7 @@ public class Main {
 		String option1 = "";
 		
 		ArrayList<Cours> al = new ArrayList<Cours>();
-		/*ArrayList<Cours> al_tab[] = new ArrayList[5]; // Tu crées un tableau d'ArrayList normaux
-		for(int i = 0 ; i < 5 ; i++) // Tu crées en boucle des ArrayList<Noeud>
-		    al_tab[i] = new ArrayList<Cours>();*/
-		
-	    line = br.readLine(); //System.out.println(line.charAt(0)); System.out.println(line.charAt(14)); System.out.println(line.length());
+	    line = br.readLine();
 	    
 	    /*********ATTENTION FAIRE +1 HEURE***********/
 	    
@@ -56,13 +62,13 @@ public class Main {
         	{
         		date1=Integer.parseInt(line.substring(9,16)); //date1
         		System.out.println(date1);
-        		hd1=Integer.parseInt(line.substring(17,21))+100; //hd1
-        		System.out.println(hd1+100);
+        		hd1=Integer.parseInt(line.substring(17,21))+200; //hd1 (ATTENTION : si heure d'été -> +200 et si heure d'hiver +100)
+        		System.out.println(hd1+200);
         	}
         	if(line.indexOf("DTEND:")!=-1)
         	{
-        		hf1=Integer.parseInt(line.substring(15,19))+100; //hf1
-        		System.out.println(hf1+100);
+        		hf1=Integer.parseInt(line.substring(15,19))+200; //hf1  (ATTENTION : si heure d'été -> +200 et si heure d'hiver +100)
+        		System.out.println(hf1+200);
         	}
         	if(line.indexOf("SUMMARY:")!=-1)
         	{
@@ -73,10 +79,8 @@ public class Main {
         	{
         		salle1=line.substring(9,line.length()).replace("\\,"," ou alors en salle");//salle1
         		salle1=salle1.replace(" ? ",", inconnue,");
-        		//salle1=line.substring(9,line.length()).replace("POLYTECH","POLYTEK");
-        		//System.out.println(salle1);
         	}
-        	if(line.indexOf("DESCRIPTION:")!=-1) //A REVOIR !!!!! ............................................................................. + synthèse vocale
+        	if(line.indexOf("DESCRIPTION:")!=-1)
         	{
         		int i=1;
         		int merde=0;
@@ -97,10 +101,8 @@ public class Main {
         		{
         			i++;
         			merde=1;
-        		} //System.out.println(line.charAt(i-1)+"-"+line.charAt(i));
+        		}
         		d=i-1;
-        		
-        		//System.out.println(a+"-"+b+"-"+c+"-"+d);
         		
         		option1=line.substring(a,b);
         		System.out.println(option1);
@@ -109,7 +111,6 @@ public class Main {
             		prof1=line.substring(c,d);
             		prof1=prof1.replace("\\n"," ou peut être ");
             		prof1=prof1.replace("\\","");
-            		//System.out.println(prof1);
         		}
         		else //pas de prof
         		{
@@ -124,7 +125,6 @@ public class Main {
     			coco=0;
     		}
         	
-            //System.out.println(line);
     		line = br.readLine();
         }
         
@@ -133,22 +133,22 @@ public class Main {
         Collections.sort(al); //tri
         
         //affichage de l'emploi du temps
-        
         for(int i = 0; i < al.size(); i++)
         {
         	System.out.println(((Cours) al.get(i)).getIntitule());
         }
         
         br.close();
-        //fr.close();
+        
 		return al;
 	}
 	
-	public static void Interrogation(ArrayList<Cours> al, String classe, String nom, String opt, String type)
+	//fonction qui permet d'interroger l'emploi du temps à partir de certaines informations (liste de cours, classe, nom, option, statut, fenetre) et de construire l'affichage
+	//ainsi que les phrases qui seront prononcées par la synthèse vocale
+	public static void Interrogation(ArrayList<Cours> al, String classe, String nom, String opt, String type, AffichageVocale aff) throws NumberFormatException, IOException
 	{
-        //récupération de la date et de l'heure du PC !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        
-        /*Date now = new Date();
+        /**récupération de la date et de l'heure du PC**/
+        Date now = new Date();
         String date = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(now);
         //System.out.println(date);
         
@@ -156,15 +156,32 @@ public class Main {
         int hour = Integer.parseInt(date.substring(9,11)+date.substring(12,14));
         System.out.println(today);
         System.out.println(hour);
-        //System.out.println(" 8. " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(now));*/
+        //System.out.println(" 8. " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(now));
 		
+		System.out.println("*****************"+nom);
+		
+		/**Variables utiles au programme**/
         int k=0;
-        int today=150224; //150224
-        int hour=800; //1400
         int suite=0;
         String dd="";
         String ff="";
         int max=al.size();
+        
+        /*****************Variables de tests*******************/
+        /*int today=0;
+        int hour=0;
+		BufferedReader in = new BufferedReader(new FileReader("date.txt"));
+		String str = null;
+	    String[] mots = null;
+	    
+		 while((str = in.readLine()) != null){
+			mots = str.split(" ");
+			today=Integer.parseInt(mots[0]);
+			hour=Integer.parseInt(mots[1]);
+		 }
+		 
+		 in.close();*/
+	    /******************************************************/
         
         while(((Cours) al.get(k)).getDate()<today && k<max-1)
         {
@@ -178,12 +195,10 @@ public class Main {
             	if(hour<=((Cours) al.get(k)).getHd() && ((((Cours) al.get(k)).getOption()).compareTo(classe)==0 || (((Cours) al.get(k)).getOption()).compareTo(opt)==0 ))
             	{
             		suite=1; //avance
-            		//System.out.println(((Cours) al.get(k)).getOption());
             	}
             	else if(((Cours) al.get(k)).getHd()<=hour && hour<=((Cours) al.get(k)).getHf() && ((((Cours) al.get(k)).getOption()).compareTo(classe)==0 || (((Cours) al.get(k)).getOption()).compareTo(opt)==0)) //
             	{
             		suite=2; //retard
-            		//System.out.println(((Cours) al.get(k)).getIntitule());
             	}
             	else
             	{
@@ -194,16 +209,14 @@ public class Main {
         else //enseignant
         {
             while(suite==0 && k<max-1 && ((Cours) al.get(k)).getDate()==today)
-            {
+            { System.out.println("ttttttttttttttttttttttttt"+((Cours) al.get(k)).getProf());
             	if(hour<=((Cours) al.get(k)).getHd() && (((Cours) al.get(k)).getProf().toLowerCase().indexOf(nom.toLowerCase())!=-1))
-            	{
+            	{ System.out.println("*****************"+((Cours) al.get(k)).getProf());
             		suite=1; //avance
-            		//System.out.println(((Cours) al.get(k)).getOption());
             	}
             	else if(((Cours) al.get(k)).getHd()<=hour && hour<=((Cours) al.get(k)).getHf() && (((Cours) al.get(k)).getProf().toLowerCase().indexOf(nom.toLowerCase())!=-1)) //
             	{
             		suite=2; //retard
-            		//System.out.println(((Cours) al.get(k)).getIntitule());
             	}
             	else
             	{
@@ -215,7 +228,8 @@ public class Main {
         if(k==max || ((Cours) al.get(k)).getDate()!=today)
         {
         	System.out.print("Vous n'avez plus de cours aujourd'hui! Bonne soirée!");
-        	vocale="Bonjour "+nom+"! Vous n'avez plus de cours aujourd'hui! A bientôt!";
+        	aff.setVocale("Bonjour "+nom+"! Vous n'avez plus de cours aujourd'hui! A bientôt!");
+        	aff.setFin(1);
         }
         else
         {
@@ -225,86 +239,118 @@ public class Main {
             if(type.compareTo("eleve")==0)
             {
                 System.out.println("Bonjour "+nom+", vous avez cours de "+(((Cours) al.get(k)).getIntitule())+" en salle "+(((Cours) al.get(k)).getSalle())+" avec "+(((Cours) al.get(k)).getProf())+".");
-                vocale="Bonjour "+nom+", vous avez cours de "+(((Cours) al.get(k)).getIntitule())+" en salle"+(((Cours) al.get(k)).getSalle())+" avec "+(((Cours) al.get(k)).getProf())+".";
+                aff.setVocale("Bonjour "+nom+", vous avez cours de "+(((Cours) al.get(k)).getIntitule())+" en salle"+(((Cours) al.get(k)).getSalle())+" avec "+(((Cours) al.get(k)).getProf())+".");
+                aff.setCours((((Cours) al.get(k)).getIntitule()));
+                aff.setSalle((((Cours) al.get(k)).getSalle()));
+                aff.setEnseignant((((Cours) al.get(k)).getProf()));
             }
             else //enseignant
             {
                 System.out.println("Bonjour "+nom+", vous avez cours de "+(((Cours) al.get(k)).getIntitule())+" en salle "+(((Cours) al.get(k)).getSalle())+" avec les "+(((Cours) al.get(k)).getOption())+".");
-                vocale="Bonjour "+nom+", vous avez cours de "+(((Cours) al.get(k)).getIntitule())+" en salle"+(((Cours) al.get(k)).getSalle())+" avec les "+(((Cours) al.get(k)).getOption())+".";
+                aff.setVocale("Bonjour "+nom+", vous avez cours de "+(((Cours) al.get(k)).getIntitule())+" en salle"+(((Cours) al.get(k)).getSalle())+" avec les "+(((Cours) al.get(k)).getOption())+".");
+                aff.setCours((((Cours) al.get(k)).getIntitule()));
+                aff.setSalle((((Cours) al.get(k)).getSalle()));
+                aff.setEnseignant((((Cours) al.get(k)).getOption()));
             }
             
             
             System.out.print("Le cours se déroulera de ");
-            vocale=vocale+" Le cours se déroulera de ";
+            aff.setVocale(aff.getVocale()+" Le cours se déroulera de ");
             
             if(dd.length()==3)
             {
             	System.out.print(dd.subSequence(0,1));
-            	vocale=vocale+dd.subSequence(0,1);
+            	aff.setVocale(aff.getVocale()+dd.subSequence(0,1));
+            	aff.setHoraire(""+dd.subSequence(0,1));
             }
             else //4
             {
             	System.out.print(dd.subSequence(0,2));
-            	vocale=vocale+dd.subSequence(0,2);
+            	aff.setVocale(aff.getVocale()+dd.subSequence(0,2));
+            	aff.setHoraire(""+dd.subSequence(0,2));
             }
             
             System.out.print("h");
-            vocale=vocale+"h";
+            aff.setVocale(aff.getVocale()+"h");
+            aff.setHoraire(aff.getHoraire()+"h");
             
             if(dd.length()==3)
             {
             	System.out.print(dd.subSequence(1,3));
-            	vocale=vocale+dd.subSequence(1,3);
+            	aff.setVocale(aff.getVocale()+dd.subSequence(1,3));
+            	aff.setHoraire(aff.getHoraire()+dd.subSequence(1,3));
             }
             else //4
             {
             	System.out.print(dd.subSequence(2,4));
-            	vocale=vocale+dd.subSequence(2,4);
+            	aff.setVocale(aff.getVocale()+dd.subSequence(2,4));
+            	aff.setHoraire(aff.getHoraire()+dd.subSequence(2,4));
             }
             
             System.out.print(" à ");
-            vocale=vocale+" à ";
+            aff.setVocale(aff.getVocale()+" à ");
+            aff.setHoraire(aff.getHoraire()+" à ");
             
             if(ff.length()==3)
             {
             	System.out.print(ff.subSequence(0,1));
-            	vocale=vocale+ff.subSequence(0,1);
+            	aff.setVocale(aff.getVocale()+ff.subSequence(0,1));
+            	aff.setHoraire(aff.getHoraire()+ff.subSequence(0,1));
             }
             else //4
             {
             	System.out.print(ff.subSequence(0,2));
-            	vocale=vocale+ff.subSequence(0,2);
+            	aff.setVocale(aff.getVocale()+ff.subSequence(0,2));
+            	aff.setHoraire(aff.getHoraire()+ff.subSequence(0,2));
             }
             
             System.out.print("h");
-            vocale=vocale+"h";
+            aff.setVocale(aff.getVocale()+"h");
+            aff.setHoraire(aff.getHoraire()+"h");
             
             if(ff.length()==3)
             {
             	System.out.print(ff.subSequence(1,3));
-            	vocale=vocale+ff.subSequence(1,3);
+            	aff.setVocale(aff.getVocale()+ff.subSequence(1,3));
+            	aff.setHoraire(aff.getHoraire()+ff.subSequence(1,3));
             }
             else //4
             {
             	System.out.print(ff.subSequence(2,4));
-            	vocale=vocale+ff.subSequence(2,4);
+            	aff.setVocale(aff.getVocale()+ff.subSequence(2,4));
+            	aff.setHoraire(aff.getHoraire()+ff.subSequence(2,4));
             }
             
             System.out.println(". Je vous souhaite une excellente journée!");
-            vocale=vocale+". Je vous souhaite une excellente journée!";
+            aff.setVocale(aff.getVocale()+". Je vous souhaite une excellente journée!");
+            aff.setFin(0);
+            trouve=true;
         }
-        vocale=vocale.replace("S.","");
-        vocale=vocale.replace("Salle","");
-        vocale=vocale.replace(" (IM²AG)","");
-        vocale=vocale.replace("POLYTECH","");
-        vocale=vocale.replace("00","");
-        vocale=vocale.replace("S8 ","");
+        aff.setVocale(aff.getVocale().replace("S.",""));
+        aff.setVocale(aff.getVocale().replace("Salle",""));
+        aff.setVocale(aff.getVocale().replace(" (IM²AG)",""));
+        aff.setVocale(aff.getVocale().replace("POLYTECH",""));
+        aff.setVocale(aff.getVocale().replace("00",""));
+        aff.setVocale(aff.getVocale().replace("S8 ",""));
+        aff.setSalle(aff.getSalle().replace(",",""));
+        aff.setSalle(aff.getSalle().replace("ou alors en salle","/"));
+        aff.setSalle(aff.getSalle().replace("Salle",""));
+        aff.setSalle(aff.getSalle().replace("POLYTECH",""));
+        aff.setEnseignant(aff.getEnseignant().replace("un, ",""));
 	}
 	
+	//fonction qui envoie du texte sur le serveur de Voxygen, qui récupère l'enregistrement et qui le joue
 	public static void Speak(String vocale) throws Exception
 	{
-		//On saisit une voix et un texte
-		String langue = "Yeti";
+		BufferedReader prop = new BufferedReader(new FileReader("speak.txt"));
+	    String langue;
+	    String serveur;
+	    
+	    langue = prop.readLine();
+	    serveur = prop.readLine();
+	    prop.close();
+	    
+		//On saisit un texte
 		String texte = vocale;
 		
 		//On affiche la saisie
@@ -312,7 +358,7 @@ public class Main {
 		System.out.println(texte);
 		
 		//On écrit dans le fichier ce qui va être traduit
-		PrintWriter fichier = new PrintWriter(new FileWriter("C:/wamp/www/PHP-Voxygen-master/texte.txt"));
+		PrintWriter fichier = new PrintWriter(new FileWriter(serveur+"texte.txt"));
 		fichier.println(langue);
 		fichier.print(texte);
 		fichier.close();
@@ -328,7 +374,7 @@ public class Main {
         in.close();
     	
         //Le fichier son porte le nom ...
-        String file = "C:/wamp/www/PHP-Voxygen-master/texte2.txt";
+        String file = serveur+"texte2.txt";
         BufferedReader buff = new BufferedReader(new FileReader(file));
         String line;
         line = buff.readLine();
@@ -336,53 +382,193 @@ public class Main {
         System.out.println(line);
         
         //On lit le fichier son
-        Sound application = new Sound("C:/wamp/www/PHP-Voxygen-master/cache/"+line);
+        Sound application = new Sound(serveur+"cache/"+line);
         application.play();
 	}
 	
-    public static void Download() throws IOException
+	//fonction qui permet de télécharger automatiquement les emplois du temps de chaque filière
+	public static void Download() throws IOException
     {
-    	String tab_url[] = {"http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=839,1133,1132,857&projectId=3&calType=ical&nbWeeks=1",
-    						"http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=698,1128,693&projectId=3&calType=ical&nbWeeks=1",
-    						"http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=86,1094,1093,1092,1091&projectId=3&calType=ical&nbWeeks=1",
-    						"http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=1139,1138,1137,1049,1010,1009,1007,1006,1005&projectId=3&calType=ical&nbWeeks=1",
-    						"http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=827,90,1072,1071,1068,24,9,8,990,906,867,2036,2037,2034,2035,2038,196&projectId=3&calType=ical&nbWeeks=1",
-    						"http://ade6-ujf.grenet.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=920,917&projectId=3&calType=ical&nbWeeks=1"};
-    	String tab_classe[] = {"RICM4", "TIS4", "PRI4" , "GEO4", "MAT4", "3I4"};
+		ArrayList<String> al_url = new ArrayList<String>();
+		ArrayList<String> al_classe = new ArrayList<String>();
     	
+    	@SuppressWarnings("resource")
+		BufferedReader in = new BufferedReader(new FileReader("adweb.txt"));
+	    String str = null;
+	    String[] mots = null;
+	    
+	    while((str = in.readLine()) != null){
+			mots = str.split(" ");
+			al_classe.add(mots[0]);
+			al_url.add(mots[1]);
+		}
+	    
     	for(int i=0;i<6;i++)
     	{
         	//On exécute la requête HTTP
-            URL oracle = new URL(tab_url[i]);
-            BufferedReader in = new BufferedReader(new InputStreamReader(oracle.openStream()));
-    		PrintWriter fichier = new PrintWriter(new FileWriter(tab_classe[i]+".ics"));
+            URL oracle = new URL(al_url.get(i));
+            BufferedReader in2 = new BufferedReader(new InputStreamReader(oracle.openStream()));
+    		PrintWriter fichier2 = new PrintWriter(new FileWriter(al_classe.get(i)+".ics"));
             //On affiche le résultat
             String inputLine;
-            while ((inputLine = in.readLine()) != null)
+            while ((inputLine = in2.readLine()) != null)
             {
-                //System.out.println(inputLine);
-        		fichier.println(inputLine);
+        		fichier2.println(inputLine);
             }
-            in.close();
-    		fichier.close();
+            in2.close();
+    		fichier2.close();
     	}
     }
 	
+	//Recherche de la personne correspondante au numéro (num étu par ex) lu par le lecteur et qui retourne une personne avec toutes les informations utiles là concernant
+	public static Personne NFC_Recherche() throws IOException, InterruptedException
+    {
+		while(fini==false)
+		{
+		    TestThread t = new TestThread("A");
+		    t.start();
+		    t.join();
+		}
+		
+		BufferedReader in = new BufferedReader(new FileReader("nfc.txt"));
+		String str = null;
+	    String[] mots = null;
+	    Personne p = null;
+	    Boolean fin = false;
+	    System.out.println(code);
+	    code=code.substring(2,10);
+	    System.out.println(code);
+	    
+		 while((str = in.readLine()) != null && fin==false){
+			mots = str.split("/");
+			if(mots[0].compareTo(code)==0)
+			{
+				if(mots[1].compareTo("eleve")==0) //eleve
+				{
+					p = new Personne(mots[2],mots[1],mots[4],mots[5]); fin=true;
+					System.out.println(mots[2]+" "+mots[1]+" "+mots[4]+" "+mots[5]);
+				}
+				else //enseignant
+				{
+					p = new Personne(mots[2],mots[1],"",""); fin=true;
+					System.out.println(mots[2]+" "+mots[1]);
+				}
+			}
+		 }
+		 
+		 in.close();
+		 fini=false;
+		 System.out.println("Personne -> "+p.getNom()+" "+p.getType()+" "+p.getClasse()+" "+p.getOpt());
+		 
+		 return(p);
+    }
+	
+	//Fonction qui met les emplois du temps de chaque filère dans une structure (une liste de ListeCours)
+	public static ArrayList<ListeCours> TraitementEmploiDuTemps() throws IOException, InterruptedException
+    {
+		ArrayList<ListeCours> al = new ArrayList<ListeCours>();
+		ArrayList<Cours> al_temp = new ArrayList<Cours>();
+		BufferedReader in = new BufferedReader(new FileReader("adweb.txt"));
+		String str = null;
+	    String[] mots = null;
+	    
+		 while((str = in.readLine()) != null){
+			mots = str.split(" ");
+			al_temp=Edt(mots[0]);
+			ListeCours alc = new ListeCours(mots[0],al_temp);
+			al.add(alc);
+		 }
+		 
+		 in.close();
+		 
+		 return al;
+    }
+	
+	//fonction principale
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 
-		ArrayList<Cours> al_RICM4;
-		String classe="RICM4"; //    RICM4    TIS4    GEO4    MAT4    PRI4
-        String nom = "Zhangmeng"; //DECHAMBOUX BOYER Fabienne    DONSEZ DIDIER    Zhangmeng
-        String type = "eleve"; //  eleve  enseignant
-        String opt="RICM4 - Op. Multimédia"; //  RICM4 - Op. Multimédia / RICM4 - Op. Système et Réseaux / TIS4 - GrA / GEO 4 - GrA  /  3I4 - A  MAT4 - 1 / PRI4-GR-A
+		//String classe -> RICM4    TIS4    GEO4    MAT4    PRI4
+        //String nom -> DECHAMBOUX BOYER Fabienne    DONSEZ DIDIER    Zhangmeng
+        //String type -> eleve  enseignant
+        //String opt -> RICM4 - Op. Multimédia / RICM4 - Op. Système et Réseaux / TIS4 - GrA / GEO 4 - GrA  /  3I4 - A  / MAT4 - 1 / PRI4-GR-A
 		
-        //Download(); //téléchargement des emplois du temps de chaque filière
-		al_RICM4=Edt(classe);
-		Interrogation(al_RICM4,classe,nom,opt,type);
+		Download(); //téléchargement automatique des emplois du temps
+		Date datePre = new Date();
 		
-		//Partie vocale
-		System.out.println(vocale);
-		Speak(vocale);
+		Fenetre f = new Fenetre();
+		f.setVisible(true);//On la rend visible
+		f.setTitle("IDS"); //On donne un titre à l'application
+		f.setSize(200,100); //On donne une taille à notre fenêtre
+		f.setLocationRelativeTo(null); //On centre la fenêtre sur l'écran
+		f.setResizable(true); //On permet le redimensionnement
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //On dit à l'application de se fermer lors du clic sur la croix
+		
+		ArrayList<ListeCours> al_classe;
+		al_classe=TraitementEmploiDuTemps(); //on met les emplois du temps dans une structure
+		
+		while(true) //boucle du programme principal (attente nfc + traitement de la demande + affichage + vocale)
+		{
+			int i=0;
+			AffichageVocale aff = new AffichageVocale(0,"","","","","");
+			
+			Personne p = NFC_Recherche(); //on récupère une personne à partir du tag nfc
+			
+			/****************téléchargement des emplois du temps automatiquement****************/
+			Date now = new Date();
+	        String today = now.toString();
+	        today=today.substring(0,3);
+	        long diff = now.getTime( ) - datePre.getTime( );
+	        diff=(diff/(1000*60*60*24));
+	        
+	        switch(today)
+	        {
+	        case "Mon" : if(diff>0){Download(); datePre=now;}
+	        	break;
+	        case "Tue" : if(diff>1){Download(); datePre=now;}
+	        	break;
+	        case "Wed" : if(diff>2){Download(); datePre=now;}
+	        	break;
+	        case "Thu" : if(diff>3){Download(); datePre=now;}
+	        	break;
+	        case "Fri" : if(diff>4){Download(); datePre=now;}
+	        	break;
+	        case "Sat" : if(diff>5){Download(); datePre=now;}
+	        	break;
+	        case "Sun" : if(diff>6){Download(); datePre=now;}
+	        	break;
+	        }
+			
+	        /****************interrogation****************/
+			if(p.getType().compareTo("eleve")==0) //on cherche quel est son prochain cours de la journée en fonction de l'heure qu'il est
+			{
+				while((al_classe.get(i).getClasse().compareTo(p.getClasse())!=0) && i < al_classe.size())
+				{
+					i++;
+				}
+				
+				Interrogation(al_classe.get(i).getAl(),p.getClasse(),p.getNom(),p.getOpt(),p.getType(),aff);
+			}
+			else //enseignant
+			{
+				while(i < al_classe.size() && trouve==false)
+				{
+					Interrogation(al_classe.get(i).getAl(),p.getClasse(),p.getNom(),p.getOpt(),p.getType(),aff);
+					i++;
+				}
+			}
+			trouve=false; //on remet à false pour le prochain coup où on en aura besoin
+			
+			/*************affichage fenetre******************/		
+			Fenetre fenetre = new Fenetre(aff,p.getType());
+			fenetre.setVisible(true);//On la rend visible
+			/*************affichage fenetre******************/
+			
+			//Partie vocale
+			System.out.println(aff.getVocale());
+			Speak(aff.getVocale());
+			
+			fenetre.dispose(); //fermeture fenetre
+		}
 	}
 }

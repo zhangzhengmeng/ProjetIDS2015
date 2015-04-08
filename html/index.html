@@ -5,16 +5,29 @@
 		<meta charset="utf-8">
 
 		<title>Polytech Grenoble</title>
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/modernizr.js"></script>
+        <script type="text/javascript" src="js/jquery-ui.js"></script>
+        <script type="text/javascript" src="js/collision.js"></script>
+        <script type="text/javascript" src="js/screenfull.js"></script>
+        <script type="text/javascript" src="js/jquery.jplayer.min.js"></script>
+        <script type="text/javascript" src="js/jplayer.playlist.min.js"></script>
+        <script type="text/javascript" src="js/jquery.jplayer.inspector.js"></script>
+        <script type="text/javascript" src="js/bjqs-1.3.min.js"></script>
 
         <meta name="description" content="Presentation of Project IDS">
         <meta name="author" content="Zhang">
-        <link rel="shortcut icon" type="image/ico" href="http://www.polytech-grenoble.fr/favicon.ico" />
+        <link rel="shortcut icon" type="image/ico" href="img/favicon.ico" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<link rel="stylesheet" href="./css/reveal.min.css">
+
+        <link href="css/fonts/fontskit.css" rel="stylesheet" />
+        <link href="css/style.css" rel="stylesheet" />
+        <link rel="Stylesheet" href="css/bjqs.css" />
+		<link rel="stylesheet" href="./css/reveal.css">
         <link rel="stylesheet" href="./css/theme/sky.css" id="theme">
 
 
@@ -36,260 +49,435 @@
 		<script src="lib/js/html5shiv.js"></script>
 		<![endif]-->
         <script src="./lib/js/qr.min.js"></script>
+
+        <script type="text/javascript" class="secret-source">
+            jQuery(document).ready(function ($) {
+                $('#my-slideshow').bjqs({
+                    'height': 130,
+                    'width': 700,
+
+                    // animation values
+                    'animtype': 'fade', // accepts 'fade' or 'slide'
+                    'animduration': 800, // how fast the animation are
+                    'automatic': true, // automatic
+
+                    // control and marker configuration
+                    'showcontrols': false, // show next and prev controls
+                    'centercontrols': false, // center controls verically
+                    'nexttext': 'Next', // Text for 'next' button (can use HTML)
+                    'prevtext': 'Prev', // Text for 'previous' button (can use HTML)
+                    'showmarkers': false, // Show individual slide markers
+                    'centermarkers': false, // Center markers horizontally
+
+                    // interaction values
+                    'keyboardnav': false, // enable keyboard navigation
+                    'hoverpause': true, // pause the slider on hover
+
+                    // presentational options
+                    'usecaptions': false, // show captions for images using the image title tag
+                    'randomstart': true, // start slider at random slide
+                    'responsive': true // enable responsive capabilities (beta)
+                });
+            });
+
+
+        </script>
+
+        <script>
+
+            var websocket;
+            $(document).ready(function(){
+
+                var idStand = "";
+                var nomStand = "";
+                var structuresStand = "";
+                var isInfos=false;
+                var cat="";
+                var catComplet="";
+                var isDesc = false;
+                var isCom = false;
+
+                var ws = null;
+                var host = "127.0.0.1"
+                var port = 8080
+                var socket = "p5websocket"
+                var x,y,z
+
+
+                console.log("trying to open a websocket")
+                var _socket = (undefined == socket)?"":"/"+socket
+                ws = new WebSocket("ws://"+host+":"+port+_socket)
+                url = "message origin=ws://"+host+":"+port+_socket+",";
+
+                ws.onopen = function () {
+                    console.log("opened")
+                    ws.send('Ping');
+                };
+                ws.onerror = function (e) {console.log('WebSocket did close ',e);};
+                ws.onerror = function (error) {console.log('WebSocket Error ' + error);	};
+                ws.onmessage = function (e) {
+                    data = e.data;
+                    msg = e.data.substring(0, e.data.indexOf(' ')).toLowerCase();
+                    switch(msg){
+                        //case 'push' :
+                            //push();
+                            //break;
+                        case 'move' :
+                            move(data);
+                            break;
+                        case 'start' :
+                            console.log(msg);
+                            $("#say_hello figure").fadeOut(600, function(){
+                                $("#say_hello").fadeOut(600);
+                                $("#cursor").fadeIn(600);
+                                $("#map").fadeIn(600);
+                            });
+                            break;
+                        case 'end' :
+                            console.log(msg);
+                            $("#say_hello, #say_hello figure").fadeIn(800);
+                            $("#cursor").fadeOut(600);
+                            $("#infos").fadeOut(600);
+                            break;
+                        case 'right' :
+                            right();
+                            break;
+                        case 'left' :
+                            left();
+                            break;
+                        case 'up' :
+                            up();
+                            break;
+                        case 'down' :
+                            down();
+                            break;
+                    }
+
+                    /*function push(){
+                        if(cat!='autre'){
+                            console.log("PUSH : "+idStand);
+                            <!--changeIframe('comments',idStand,'liste_commentaires');-->
+                            <!--changeIframe('likes',idStand,'likes');-->
+                            changeIframe('description',idStand,'txt_description');
+                            $("#infos").fadeToggle(600);
+                            if(cat=='filiere'){
+                                catComplet='Filière de Polytech Grenoble';
+                            }else if(cat=='polytech'){
+                                catComplet='Polytech Grenoble, Grande Ecole d\'Ingénieurs';
+                            }else if(cat=='projet'){
+                                catComplet='Projets à Polytech Grenoble';
+                            }else if(cat=='admin'){
+                                catComplet='Intégrer Polytech Grenoble';
+                            }
+                            $("#infos header").html('<h3><img align="middle" src="css/img/picto_'+cat+'_w.png" />'+catComplet+'</h3>');
+                            $("#infos").css('background-image', 'url(css/img/' + idStand + '.jpg)');
+                            $("#infos header").addClass(cat);
+                            $("#infos #home h1").html(nomStand);
+                            $("#infos #home h3").html(structuresStand);
+                            $("#cross").fadeToggle(600);
+
+
+
+                            isInfos=!isInfos;
+                            isDesc=true;
+                            isCom=true;
+                            console.log(isDesc+'/'+isCom)
+                        }
+                    }*/
+
+                    function up(){
+                        Reveal.navigateUp()
+                    }
+
+                    function down() {
+                        Reveal.navigateDown()
+                    }
+
+                    function left() {
+                        Reveal.navigateLeft()
+                    }
+
+                    function right() {
+                        Reveal.navigateRight()
+                    }
+
+                    function move(data){
+                        splitmsg = data.split(" ");
+                        //console.log(splitmsg[1]+" | "+splitmsg[2]+" | "+splitmsg[3]+" | "+splitmsg[4]);
+                        $("#cursor").css({"left":splitmsg[1]*100/640+"%","top":splitmsg[2]*100/240+"%"});
+                        var offset = $("#cursor").offset()
+                        $("#cross").css({"left":offset.left+40,"top":offset.top-8});
+                        $("#xy").html(Math.round(offset.left)+"/"+Math.round(offset.top));
+
+                        // This is the Collision-Function
+                        if(isInfos==false){
+                            $('#map div').touch({
+                                // When any .crusher hits any .target
+                                'intersector' : '#cursor',
+                                // Do stuff with the Objects
+                                'action' : function(target) {
+                                    // hide the .crusher
+                                    target.addClass('survol');
+                                    idStand = parseInt(target.attr('title'));
+                                    var arraycat = target.attr('class').split(' ');
+                                    cat = arraycat[0];
+                                    var infosStand = target.attr('name').split('&');
+                                    nomStand = infosStand[0];
+                                    structuresStand = infosStand[1];
+                                    if(cat=='villes'){
+                                        catComplet='Villes contemporaines et numériques';
+                                    }else if(cat=='atelier'){
+                                        catComplet='Processus Arts-Sciences';
+                                    }else if(cat=='objets'){
+                                        catComplet='Objets interactifs et communicants';
+                                    }else if(cat=='immersive'){
+                                        catComplet='Expériences immersives';
+                                    }
+                                    $('#slide_titre').html('<h4>'+catComplet+'</h4><h1>'+nomStand+'</h1><h3>'+structuresStand+'</h3>');
+                                },
+                                // Do stuff with the Objects
+                                'stop' : function(target) {
+                                    // hide the .crusher
+                                    target.removeClass('survol');
+                                }
+
+                            });
+                        }
+
+                        if(isInfos==true){
+                            $('#description').touch({
+                                // When any .crusher hits any .target
+                                'intersector' : '#cursor',
+                                // Do stuff with the Objects
+                                'action' : function(target2) {
+                                    // hide the .crusher
+                                    target2.addClass('descd');
+                                }
+                                ,
+                                // Do stuff with the Objects
+                                'stop' : function(target2) {
+                                    // hide the .crusher
+                                    target2.removeClass('descd');
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+
+        </script>
+
 	</head>
 
 	<body>
 
 <!--		<div class='footer'>Use arrows to navigate</div>
 -->
+        <div id="say_hello">
+            <figure>
+                <img src="css/img/hello.png" width="200" />
+                <figcaption>Saluez l'écran pour commencer l'expérience</figcaption>
+                <img src="css/img/deplacement.png" width="200" />
+                <figcaption>Déplacez votre main pour naviguer</figcaption>
+            </figure>
+        </div>
 
-        <div class="reveal" data-autoslide="5000">
+            <div class="reveal" data-autoslide="5000">
+                <div id="map">
+                    <div class="slides">
+                        <section>
+                            <h1>Projet IDS</h1>
+                            <h2>RICM 4</h2>
+                        </section>
 
-            <div class="slides">
-                <section>
-                    <h1>Projet IDS</h1>
-                    <h2>RICM 4</h2>
-                    <canvas id="qr-code"></canvas>
-                    <script>
-                        qr.canvas({
-                            canvas:
-                                  document.getElementById('qr-code'),
-                            value: document.URL,
-                            size: 10,
-                            level: 'H',
-                        });
-                    </script>
-                    <aside class="notes">
-                        Oh hey, these are some notes. They'll be hidden in your presentation, but you can see them if you open the speaker notes window (hit 's' on your keyboard).
-                    </aside>
-                </section>
-                
-                <section>
-                    <section>
-                        <h1>
-                            Présentation de<br /> 
-                            Polytech Grenoble
-                        </h1>
-                    </section>
-                    <section>
-                        <p>
-                            POLYTECH GRENOBLE est l'école d'ingénieurs de l'UNIVERSITE JOSEPH FOURIER.
-                            <br /><br />
-                            C’est une grande école habilitée par la Commission des Titres d’Ingénieur, labelisée IDEFI (Initiatives d'Excellence en Formations Innovantes).
-                            <br /><br />
-                            Comme toutes les autres écoles du RESEAU POLYTECH, elle s’appuie sur un fort partenariat avec le monde de l’entreprise.
-                        </p>
-                        <aside class="notes"></aside>
-                    </section>
-                    <section>
-                        <img class="stretch"
-                             src="http://www.polytech-grenoble.fr/squelettes/images/7spec2014.gif" />
-                    </section>
-                    <section>
-                        <img class="stretch"
-                             src="http://www.polytech-grenoble.fr/local/cache-gd2/6ca31b76bc8eb82cb3e3205adffc9343.png" />
-                    </section>
-                    
-                    
-                </section>
+                        <section>
+                            <section>
+                                <h1>
+                                    Présentation de<br />
+                                    Polytech Grenoble
+                                </h1>
+                            </section>
+                            <section>
+                                <p>
+                                    POLYTECH GRENOBLE est l'école d'ingénieurs de l'UNIVERSITE JOSEPH FOURIER.
+                                    <br /><br />
+                                    C’est une grande école habilitée par la Commission des Titres d’Ingénieur, labelisée IDEFI (Initiatives d'Excellence en Formations Innovantes).
+                                    <br /><br />
+                                    Comme toutes les autres écoles du RESEAU POLYTECH, elle s’appuie sur un fort partenariat avec le monde de l’entreprise.
+                                </p>
+                                <aside class="notes"></aside>
+                            </section>
+                            <section>
+                                <img class="stretch"
+                                     src="http://www.polytech-grenoble.fr/squelettes/images/7spec2014.gif" />
+                            </section>
+                            <section>
+                                <iframe src="http://ade6-ujf.grenet.fr/direct/index.jsp?projectId=7&login=voirPOLYTECH&password=polytech&resources=1117,15&days=0,1,2,3,4&displayConfId=1" width="3000" height="3000" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:3px solid #666; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+                            </section>
 
 
-                <section data-state="RICM">
-                    <section>
-                        <h1>Présentation <br />
-                        de la filière<br /><br />
-                        Matériaux</h1>
-                    </section>
-                    <section>
-                        <p>Le département Matériaux de Polytech Grenoble forme des ingénieurs généralistes en science et génie des matériaux capables d’appréhender l’ensemble des matériaux présents dans notre environnement tels que les polymères, les métaux, les céramiques et les composites.</p>                       
-                    </section>
-                    <section>
-                        <p>Thématiques</p>
-                <img class="stretch" src="http://www.polytech-grenoble.fr/IMG/jpg/secteurs_mat.jpg" />
-                 </section>
-                </section>
-                <section>
-                    <section>
-                        <h1>Student<br />Projects</h1>
-                    </section>
-                    <section data-background="http://opensmartcampus.org/images/banner.png">
-                        <h3>SmartCampus</h3>
-                        <img class="stretch"
-                             src="http://air.imag.fr/images/b/bb/SmartCampus2014-009.jpg" />
-                    </section>
-                    <section data-background="http://opensmartcampus.org/images/banner.png">
-                        <h3>Augmented SmartCampus</h3>
-                        <iframe data-autoplay
-                                class="stretch"
-                                src="http://www.youtube.com/embed/dsqibd7xYqM"></iframe>
-                    </section>
-                    <section>
-                        <h3>RobAIR</h3>
-                        <img class="stretch"
-                             src="http://air.imag.fr/images/f/fc/FlowerPotRobot5.jpg" />
-                    </section>
-                    <section>
-                        <h3>
-                            Interactive Digital
-                            Signage
-                        </h3>
-                        <img class="stretch" src="http://air.imag.fr/images/1/1d/IDS-Experimenta2.jpg" />
-                    </section>
-                </section>
-                <section>
-                    <section>
-                        <h1>FabLabs<br />@<br />Twitter</h1>
-                    </section>
-                    <section>
-                        <h2>@FablabAIR</h2>
-                        <a class="twitter-timeline" href="https://twitter.com/FablabAIR" data-widget-id="509568055651741696">Tweets de @FablabAIR</a>
-                        <script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https'; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = p + "://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");</script>
-
-                    </section>
-                    <section>
-                        <h2>@FabEnsimag</h2>
-                    </section>
-                    <section>
-                        <h2>@FabMSTIC</h2>
-                    </section>
-                </section>
-
-                <section>
-                    <section>
-                        <h1>Things</h1>
-                    </section>
-                    <section>
-                        <h2>Robotics with Arduino</h2>
-                    </section>
-                    <section>
-                        <h2>Flexihand</h2>
-                    </section>
-                    <section>
-                        <h2>Cubicle</h2>
-                    </section>
-                </section>
-
-                <section data-markdown data-transition="zoom" data-transition-speed="fast">
-                    <!-- This slide will override the presentation transition and zoom! -->
-                    <!-- Choose from three transition speeds: default, fast or slow -->
-                    <script type="text/template">
-                        ## Wikis
-
-                        - AIR [wiki](http://air.imag.fr).
-                        - FabENSIMAG [wiki](http://fablab.ensimag.fr).
-                        - FabMSTIC [wiki](http://fabmstic.liglab.fr/).
-                    </script>
-                </section>
-                <section id="customization">
-                    <h2>Bonus : Customization</h2>
-                    <p>
-                        You can select from different transitions, like: <br>
-                        <a href="?transition=cube#/transitions">Cube</a> -
-                        <a href="?transition=page#/transitions">Page</a> -
-                        <a href="?transition=concave#/transitions">Concave</a> -
-                        <a href="?transition=zoom#/transitions">Zoom</a> -
-                        <a href="?transition=linear#/transitions">Linear</a> -
-                        <a href="?transition=fade#/transitions">Fade</a> -
-                        <a href="?transition=none#/transitions">None</a> -
-                        <a href="?#/transitions">Default</a>
-                    </p>
-                    <p>
-                        You can select from built-in themes, like: <br>
-                        <a href="?#/themes">Default</a> -
-                        <a href="?theme=sky#/themes">Sky</a> -
-                        <a href="?theme=beige#/themes">Beige</a> -
-                        <a href="?theme=simple#/themes">Simple</a> -
-                        <a href="?theme=serif#/themes">Serif</a> -
-                        <a href="?theme=night#/themes">Night</a> <br>
-                        <a href="?theme=moon#/themes">Moon</a> -
-                        <a href="?theme=solarized#/themes">Solarized</a>
-                    </p>
-                </section>
-            </div>
-
-<!-- Script -->
-	</div>		  
-		<script src="./lib/js/head.min.js"></script>
-		<script src="./js/reveal.min.js"></script>
-		<script>
-
-			Reveal.initialize({
-				transition: 'linear'
-			});
-
-Reveal.configure({ slideNumber: true });
-
-// Turn autoSlide off
-//Reveal.configure({ autoSlide: 0 });
-
-// Start auto-sliding every 5s
-Reveal.configure({ autoSlide: 5000 });
-
-Reveal.initialize({
-    dependencies: [
-        // Cross-browser shim that fully implements classList - https://github.com/eligrey/classList.js/
-        { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
-
-        // Interpret Markdown in <section> elements
-        { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-        { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-
-        // Syntax highlight for <code> elements
-        { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-
-        // Zoom in and out with Alt+click
-        { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
-
-        // Speaker notes
-        { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
-
-        // Remote control your reveal.js presentation using a touch device
-        { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } },
-
-        // MathJax
-        { src: 'plugin/math/math.js', async: true }
-    ]
-});
-
-// === Listeners ===
-
-Reveal.addEventListener( 'ready', function( event ) {
-    // event.currentSlide, event.indexh, event.indexv
-} );
-
-	
-/*
-Reveal.addEventListener( 'slidechanged', function( event ) {
-    // event.previousSlide, event.currentSlide, event.indexh, event.indexv
-    // If you want the footer to disappear as soon as user navigates (i.e. it should only be shown on first slide loaded because it is just a reminder), then add this to the end of your html:
-});
-*/
-
-// displayed upon load, hides when slide changes
-Reveal.addEventListener('slidechanged', function(event) {
-    document.querySelector('.reveal .footer').style.display = 'none';
-  });
-
-Reveal.addEventListener( 'cncstart', function() {
-     // TODO: Sprinkle magic
-}, false );
+                        </section>
 
 
-Reveal.addEventListener( 'fragmentshown', function( event ) {
-    // event.fragment = the fragment DOM element
-} );
+                        <section data-state="MAT">
+                            <section>
+                                <h2>
+                                    Présentation <br />
+                                    de la filière<br /><br />
+                                    Matériaux
+                                </h2>
+                            </section>
+                            <section>
+                                <p>Le département Matériaux de Polytech Grenoble forme des ingénieurs généralistes en science et génie des matériaux capables d’appréhender l’ensemble des matériaux présents dans notre environnement tels que les polymères, les métaux, les céramiques et les composites.</p>
+                            </section>
+                            <section>
+                                <p>Thématiques</p>
+                                <img class="stretch" src="http://www.polytech-grenoble.fr/IMG/jpg/secteurs_mat.jpg" />
+                            </section>
+                        </section>
 
-Reveal.addEventListener( 'fragmenthidden', function( event ) {
-    // event.fragment = the fragment DOM element
-} );
+                        <section data-state="3I">
+                            <section>
+                                <h2>
+                                    Présentation<br />
+                                    de la filière<br /><br />
+                                    Informatique Industrielle<br />
+                                    et Instrumentation
+                                </h2>
+                            </section>
+                            <section>
+                                <p>Les ingénieurs en Informatique Industrielle et Instrumentation ont une triple compétence en automatique, électronique et informatique industrielle. Intégrateurs de systèmes, les diplômés du département 3i sont amenés à concevoir, mettre en œuvre et qualifier des ensembles électroniques et informatiques complexes comme des chaînes de mesures, l’automatisation complète de procédés de production ou encore des systèmes embarqués.</p>
+                            </section>
+                            <section>
+                                <p>Thématiques</p>
+                                <p>
+                                    Électronique: Électronique analogique et numérique, Électronique HF, Microélectronique, Microsystèmes<br /><br />
+                                    Instrumentation: Capteurs, Traitement du signal et des images, Réseaux locaux et bus de terrain<br /><br />
+                                    Informatique: Algorithmique et langages, Microcontrôleurs et microprocesseurs, Architecture des ordinateurs<br /><br />
+                                    Automatique: Asservissements, Régulation, Sûreté de fonctionnement)
+                                </p>
+                            </section>
+                        </section>
 
 
-Reveal.addEventListener( 'overviewshown', function( event ) { /* ... */ } );
-Reveal.addEventListener( 'overviewhidden', function( event ) { /* ... */ } );
+                        <section data-state="RICM">
+                            <section>
+                                <h2>
+                                    Présentation<br />
+                                    de la filière<br /><br />
+                                    Réseaux Informatiques<br />
+                                    et Communication Multimédia
+                                </h2>
+                            </section>
+                            <section>
+                                <p>Le département Réseaux Informatiques et Communication Multimédia forme des ingénieurs informaticiens, qualifiés dans les domaines des technologies de l’information et de la communication. Ils doivent donc s’appuyer sur un ensemble de compétences de base, complété par une spécialisation technique leur donnant les outils et méthodes nécessaires pour s’adapter à l’évolution des techniques et des métiers comme l’informatique mobile, l’informatique ambiante, l’internet des choses et l’informatique en nuage.</p>
+                            </section>
+                            <section>
+                                <p>
+                                    Pour l’option "Architecture de réseaux", ce sont les principes et techniques de réseaux actuels (haut débit, mobiles, capteurs sans fil), les fonctions liées à l’administration et à la sécurité ainsi que les techniques d’intégration d’applications d’entreprises sur les infrastructures en nuage (cloud computing) et durable (green computing).
+                                </p>
+                            </section>
+                            <section>
+                                <p>
+                                    Pour l’option "Communication multimédia", ces compétences sont les principes et techniques de l’interaction personne-systèmes (mobile, gestuelle, naturelle), le génie logiciel des applications multimédias, l’analyse et la recherche d’informations multimédias.
+                                </p>
+                            </section>
+                            <section>
+                                <p>Thématiques</p>
+                                <p>
+                                    Logiciel：Informatique fondamentale, Algorithmique et programmation, Génie logiciel et Bases de données<br /><br />
+                                    Matériel：Architecture matérielle, Traitement du signal et communications, Informatique mobile, ubiquitaire et enfouie, Internet des choses<br /><br />
+                                    Systèmes et réseaux：Réseaux et protocoles, Intergiciels et systèmes répartis, Architecture de service Web et des services Cloud<br /><br />
+                                    Multimédia：Interactions homme-machine, Communication langagière, Recherche d’informations, Synthèse d’images
+                                </p>
+                            </section>
+                        </section>
+                    </div>
+                </div>
+                    <!-- Script -->
+                </div>
+            <div id="cursor"></div>
+            <script src="./lib/js/head.min.js"></script>
+            <script src="./js/reveal.min.js"></script>
+            <script>
 
-// Toggle the overview mode programmatically
-// Reveal.toggleOverview();
-		</script>
+                Reveal.initialize({
+                    transition: 'linear'
+                });
 
-	</body>
+                Reveal.configure({ slideNumber: true });
+
+                // Turn autoSlide off
+                //Reveal.configure({ autoSlide: 0 });
+
+                // Start auto-sliding every 5s
+                //Reveal.configure({ autoSlide: 5000 });
+
+                Reveal.initialize({
+                    dependencies: [
+                        // Cross-browser shim that fully implements classList - https://github.com/eligrey/classList.js/
+                        { src: 'lib/js/classList.js', condition: function () { return !document.body.classList; } },
+
+                        // Interpret Markdown in <section> elements
+                        { src: 'plugin/markdown/marked.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+                        { src: 'plugin/markdown/markdown.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+
+                        // Syntax highlight for <code> elements
+                        { src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } },
+
+                        // Zoom in and out with Alt+click
+                        { src: 'plugin/zoom-js/zoom.js', async: true, condition: function () { return !!document.body.classList; } },
+
+                        // Speaker notes
+                        { src: 'plugin/notes/notes.js', async: true, condition: function () { return !!document.body.classList; } },
+
+                        // Remote control your reveal.js presentation using a touch device
+                        { src: 'plugin/remotes/remotes.js', async: true, condition: function () { return !!document.body.classList; } },
+
+                        // MathJax
+                        { src: 'plugin/math/math.js', async: true }
+                    ]
+                });
+
+                // === Listeners ===
+
+                Reveal.addEventListener('ready', function (event) {
+                    // event.currentSlide, event.indexh, event.indexv
+                });
+
+
+                /*
+                Reveal.addEventListener( 'slidechanged', function( event ) {
+                    // event.previousSlide, event.currentSlide, event.indexh, event.indexv
+                    // If you want the footer to disappear as soon as user navigates (i.e. it should only be shown on first slide loaded because it is just a reminder), then add this to the end of your html:
+                });
+                */
+
+                // displayed upon load, hides when slide changes
+                Reveal.addEventListener('slidechanged', function (event) {
+                    document.querySelector('.reveal .footer').style.display = 'none';
+                });
+
+                Reveal.addEventListener('cncstart', function () {
+                    // TODO: Sprinkle magic
+                }, false);
+
+
+                Reveal.addEventListener('fragmentshown', function (event) {
+                    // event.fragment = the fragment DOM element
+                });
+
+                Reveal.addEventListener('fragmenthidden', function (event) {
+                    // event.fragment = the fragment DOM element
+                });
+
+
+                Reveal.addEventListener('overviewshown', function (event) { /* ... */ });
+                Reveal.addEventListener('overviewhidden', function (event) { /* ... */ });
+
+                // Toggle the overview mode programmatically
+                // Reveal.toggleOverview();
+            </script>
+
+</body>
 </html>
