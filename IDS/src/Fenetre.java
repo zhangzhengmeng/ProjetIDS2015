@@ -13,6 +13,10 @@ public class Fenetre extends JFrame{
 	
 	private static final long serialVersionUID = 1L;
 
+	public Fenetre(){
+		super();
+	}
+	
 	public Fenetre(AffichageVocale aff, String type){
 		super();
 		
@@ -20,7 +24,7 @@ public class Fenetre extends JFrame{
 	}
 	
 	private void build(AffichageVocale aff, String type){
-		setTitle("Fenêtre qui affiche du texte"); //On donne un titre à l'application
+		setTitle("IDS"); //On donne un titre à l'application
 		setSize(640,480); //On donne une taille à notre fenêtre
 		setLocationRelativeTo(null); //On centre la fenêtre sur l'écran
 		setResizable(true); //On permet le redimensionnement
